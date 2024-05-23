@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class Admin_StudentReport : System.Web.UI.Page
+public partial class Staff_StudentReport : System.Web.UI.Page
 {
     DS_STD.STDMST_SELECTDataTable StdDT = new DS_STD.STDMST_SELECTDataTable();
     DS_STDTableAdapters.STDMST_SELECTTableAdapter StdAdapter = new DS_STDTableAdapters.STDMST_SELECTTableAdapter();
@@ -20,56 +20,28 @@ public partial class Admin_StudentReport : System.Web.UI.Page
     DS_STUDENTTableAdapters.StudentMst_SELECTTableAdapter StuAdapter = new DS_STUDENTTableAdapters.StudentMst_SELECTTableAdapter();
     protected void Page_Load(object sender, EventArgs e)
     {
+        lbl.Text = "";
         if (Page.IsPostBack == false)
         {
-           // StaffDT = StaffAdapter.Select_UNAME(Session["uname"].ToString());
-
-           // lblstd.Text = StaffDT.Rows[0]["StdName"].ToString();
-
+            StaffDT = StaffAdapter.Select_UNAME(Session["uname"].ToString());
             StdDT = StdAdapter.SelectStd();
             drpstd.DataSource = StdDT;
-            drpstd.DataTextField = "StdName";
-            drpstd.DataValueField = "Sid";
+            drpstd.DataTextField = "STDName";
+            drpstd.DataValueField = "SID";
             drpstd.DataBind();
-
             drpstd.Items.Insert(0, "SELECT");
+
             drpdiv.Items.Insert(0, "SELECT");
-            drpstudent.Items.Insert(0, "SELECT");
+           
         }
+
     }
-    protected void drpdiv_SelectedIndexChanged(object sender, EventArgs e)
+    protected void Button7_Click(object sender, EventArgs e)
     {
         StuDT = StuAdapter.Select_By_STD_DIV(drpstd.SelectedItem.Text, drpdiv.SelectedItem.Text);
-
-        drpstudent.DataSource = StuDT;
-        drpstudent.DataTextField = "rollno";
-        drpstudent.DataValueField = "sid";
-        drpstudent.DataBind();
-        drpstudent.Items.Insert(0, "SELECT");
-    }
-    protected void btnsarch_Click(object sender, EventArgs e)
-    {
-        StuDT = StuAdapter.SELECT_BY_ID(Convert.ToInt32(drpstudent.SelectedValue));
-        if (StuDT.Rows.Count == 1)
-        {
-            lblroll.Text = StuDT.Rows[0]["rollno"].ToString();
-            lblname.Text = StuDT.Rows[0]["name"].ToString();
-            lblemail.Text = StuDT.Rows[0]["email"].ToString();
-            lblmobile.Text = StuDT.Rows[0]["mobile"].ToString();
-            lbldob.Text = StuDT.Rows[0]["dob"].ToString();
-            lbladd.Text = StuDT.Rows[0]["add"].ToString();
-            lblcity.Text = StuDT.Rows[0]["city"].ToString();
-            lblpin.Text = StuDT.Rows[0]["pincode"].ToString();
-            lbluname.Text = StuDT.Rows[0]["uname"].ToString();
-            lblpass.Text = StuDT.Rows[0]["pass"].ToString();
-            imgg.ImageUrl = StuDT.Rows[0]["image"].ToString();
-            MultiView1.ActiveViewIndex = 0;
-        }
-        else
-        {
-            MultiView1.ActiveViewIndex = -1;
-        }
-
+        GridView1.DataSource = StuDT;
+        GridView1.DataBind();
+        lbl.Text = "Total Student = " + GridView1.Rows.Count.ToString();
     }
     protected void drpstd_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -79,9 +51,5 @@ public partial class Admin_StudentReport : System.Web.UI.Page
         drpdiv.DataValueField = "DID";
         drpdiv.DataBind();
         drpdiv.Items.Insert(0, "SELECT");
-        drpstudent.Items.Clear();
-       
-        drpstudent.Items.Insert(0, "SELECT");
-
     }
 }

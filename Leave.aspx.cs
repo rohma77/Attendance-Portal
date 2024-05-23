@@ -5,40 +5,101 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class Student_Leave : System.Web.UI.Page
+public partial class Staff_Leave : System.Web.UI.Page
 {
-    DS_STUDENT.StudentMst_SELECTDataTable StuDT = new DS_STUDENT.StudentMst_SELECTDataTable();
-    DS_STUDENTTableAdapters.StudentMst_SELECTTableAdapter StuAdapter = new DS_STUDENTTableAdapters.StudentMst_SELECTTableAdapter();
-
     DS_LEAVE.Leavemst_SELECTDataTable LeaveDT = new DS_LEAVE.Leavemst_SELECTDataTable();
     DS_LEAVETableAdapters.Leavemst_SELECTTableAdapter LeaveAdapter = new DS_LEAVETableAdapters.Leavemst_SELECTTableAdapter();
+   
     protected void Page_Load(object sender, EventArgs e)
     {
-        lbl.Text = "";
+        if (Page.IsPostBack == false)
+        {
+            MultiView1.ActiveViewIndex = 0;
+            LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(), "Pending");
 
+            GridView1.DataSource = LeaveDT;
+            GridView1.DataBind();
+            lblnew.Text = GridView1.Rows.Count.ToString();
+        }
     }
-    protected void btnappluleave_Click(object sender, EventArgs e)
-    {
-        StuDT = StuAdapter.Select_UNAME(Session["sname"].ToString());
-
-        LeaveAdapter.Insert(StuDT.Rows[0]["rollno"].ToString(),StuDT.Rows[0]["Name"].ToString(),StuDT.Rows[0]["stdname"].ToString(),txtmsg.Text,Convert.ToInt32(DropDownList1.SelectedItem.Text),"Pending");
-    lbl.Text="Apply for leave successfully";
-    txtmsg.Text = "";
-    DropDownList1.SelectedIndex = 0;
-
-    }
-    protected void Button7_Click(object sender, EventArgs e)
+    protected void btnnewleave_Click(object sender, EventArgs e)
     {
         MultiView1.ActiveViewIndex = 0;
+        LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(), "Pending");
+
+        GridView1.DataSource = LeaveDT;
+        GridView1.DataBind();
+        lblnew.Text = GridView1.Rows.Count.ToString();
     }
-    protected void Button8_Click(object sender, EventArgs e)
+    protected void btnapprove_Click(object sender, EventArgs e)
     {
         MultiView1.ActiveViewIndex = 1;
-         StuDT = StuAdapter.Select_UNAME(Session["sname"].ToString());
-        LeaveDT=LeaveAdapter.Select_By_RollNo(StuDT.Rows[0]["rollno"].ToString());
+        LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(),"Approve");
 
-        GridView1.DataSource=LeaveDT;
-        GridView1.DataBind();
+        GridView2.DataSource = LeaveDT;
+        GridView2.DataBind();
+        lblapp.Text = GridView2.Rows.Count.ToString();
+    }
+    protected void btnreject_Click(object sender, EventArgs e)
+    {
+        MultiView1.ActiveViewIndex = 2;
+        LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(),"Reject");
 
+        GridView3.DataSource = LeaveDT;
+        GridView3.DataBind();
+        lblrej.Text = GridView3.Rows.Count.ToString();
+    }
+    protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "Approve")
+        {
+
+            LeaveAdapter.LeaveMst_UPDATE_STATU(Convert.ToInt32(e.CommandArgument.ToString()), "Approve");
+            MultiView1.ActiveViewIndex = 0;
+            LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(), "Pending");
+
+            GridView1.DataSource = LeaveDT;
+            GridView1.DataBind();
+            lblnew.Text = GridView1.Rows.Count.ToString();
+        }
+        else
+        { 
+        
+        }
+
+    }
+    protected void GridView2_RowCreated(object sender, GridViewRowEventArgs e)
+    {
+
+       
+    }
+    protected void GridView2_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "Reject")
+        {
+            LeaveAdapter.LeaveMst_UPDATE_STATU(Convert.ToInt32(e.CommandArgument.ToString()), "Reject");
+            MultiView1.ActiveViewIndex = 1;
+            LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(), "Approve");
+
+            GridView2.DataSource = LeaveDT;
+            GridView2.DataBind();
+            lblapp.Text = GridView2.Rows.Count.ToString();
+        }
+        
+    }
+    protected void GridView3_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+
+        if (e.CommandName == "Approve")
+        {
+            LeaveAdapter.LeaveMst_UPDATE_STATU(Convert.ToInt32(e.CommandArgument.ToString()), "Approve");
+            MultiView1.ActiveViewIndex = 2;
+            LeaveDT = LeaveAdapter.Select_By_STD_and_STATUS(Session["std"].ToString(), "Reject");
+
+            GridView3.DataSource = LeaveDT;
+            GridView3.DataBind();
+            lblrej.Text = GridView3.Rows.Count.ToString();
+        }
+       
     }
 }
